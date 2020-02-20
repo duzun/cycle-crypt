@@ -1,0 +1,89 @@
+{
+  "name": "cycle-crypt",
+  "version": "1.0.0",
+  "description": "Simple encryption algorithm by cycling the key and the salt while xor-ing the data",
+  "module": "cycle-crypt.js",
+  "main": "dist/cycle-crypt.js",
+  "unpkg": "dist/cycle-crypt.min.js",
+  "reveal": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "cycle-crypt.*",
+    "lib/*",
+    "dist/*",
+    "*.md"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "test_php": "php ./vendor/bin/phpunit ./test/",
+    "test_js": "npx mocha --reporter spec",
+    "test": "npm run test_php && npm run test_js",
+    "coverage": "npx nyc --reporter=lcov --reporter=text-summary npm run test_js",
+    "jest": "npx jest",
+    "jest:watch": "npx jest --watch",
+    "jest:cov": "npx jest --coverage",
+    "verup": "verup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duzun/cycle-crypt.git"
+  },
+  "keywords": [
+    "xor",
+    "xorshift",
+    "crypt",
+    "encryption",
+    "cryptography",
+    "JavaScript",
+    "JS",
+    "PHP",
+    "cycle",
+    "salt",
+    "key"
+  ],
+  "author": "Dumitru Uzun <contact@duzun.me> (https://DUzun.Me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duzun/cycle-crypt/issues"
+  },
+  "homepage": "https://github.com/duzun/cycle-crypt#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "chai": "^4.2.0",
+    "esm": "^3.2.25",
+    "mocha": "^6.2.2",
+    "rollup": "^1.27.8",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "verup": "^1.7"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "jshintConfig": {
+    "esversion": 9,
+    "laxbreak": true,
+    "laxcomma": true,
+    "undef": true,
+    "unused": true,
+    "sub": true,
+    "expr": true,
+    "bitwise": false,
+    "eqeqeq": false,
+    "boss": true,
+    "eqnull": true,
+    "scripturl": true,
+    "-W041": false
+  },
+  "extra": {
+    "verup": {
+      "files": [
+        "cycle-crypt.php",
+        "cycle-crypt.js",
+        "composer.json",
+        "package-lock.json"
+      ]
+    }
+  }
+}

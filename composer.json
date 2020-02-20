@@ -1,0 +1,25 @@
+{
+  "name": "duzun/cycle-crypt",
+  "version": "1.0.0",
+  "description": "Simple encryption algorithm by cycling the key and the salt while xor-ing the data",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dumitru Uzun",
+      "email": "contact@duzun.me"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "cycle-crypt.php"
+    ],
+    "exclude-from-classmap": [
+      "/test/"
+    ]
+  },
+  "require": {},
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}
