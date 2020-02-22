@@ -6,34 +6,30 @@
 
     /*requires Uint8Array*/
 
-    /*globals escape, unescape, encodeURI, decodeURIComponent*/
+    /*globals escape, unescape, encodeURI, decodeURIComponent, btoa*/
     var chr = String.fromCharCode;
 
     function ord(chr) {
       return chr.charCodeAt(0);
     }
 
-    function str2buffer(str, asUtf8) {
-      if (asUtf8 == undefined) {
-        asUtf8 = hasMultibyte(str); // || !isASCII(str)
-      }
-
-      if (asUtf8) {
-        str = utf8Encode(str);
-      }
-
-      return new Uint8Array(str.split('').map(ord));
-    }
-    function buffer2str(buf, asUtf8) {
-      if (typeof buf == 'string') return buf;
-
+    function buffer2bin(buf) {
       if (buf.BYTES_PER_ELEMENT > 1) {
         buf = new Uint8Array(buf.buffer);
       }
 
-      buf = chr.apply(String, buf);
+      return chr.apply(String, buf);
+    }
+    function buffer2hex(buf) {
+      return buf.reduce(function (r, c) {
+        return r += c.toString(16).padStart(2, '0');
+      }, '');
+    }
+    function buffer2str(buf, asUtf8) {
+      if (typeof buf == 'string') return buf;
+      buf = buffer2bin(buf);
 
-      if (!isASCII(buf)) {
+      if (asUtf8 !== false && !isASCII(buf)) {
         if (asUtf8) {
           buf = utf8Decode(buf);
         } else if (asUtf8 == undefined) {
@@ -45,8 +41,51 @@
 
       return buf;
     }
+    function str2buffer(str, asUtf8) {
+      if (asUtf8 == undefined) {
+        // Some guessing
+        asUtf8 = hasMultibyte(str); // || !isASCII(str)
+      }
+
+      if (asUtf8) {
+        str = utf8Encode(str);
+      }
+
+      return new Uint8Array(str.split('').map(ord));
+    }
+    /**
+     * This method is a replacement of Buffer.toString(enc)
+     * for Browser, where Buffer is not available.
+     *
+     * @param   {String}  enc  'binary' | 'hex' | 'base64' | 'utf8' | undefined
+     *
+     * @return  {String}
+     */
+
     function toString(enc) {
-      return buffer2str(this, enc && enc == 'utf8');
+      // The Node.js equivalent would be something like:
+      // if(typeof Buffer == 'function') {
+      //     if(enc === false) enc = 'binary';
+      //     if(enc === true) enc = 'utf8';
+      //     return Buffer.from(this.buffer).toString(enc);
+      // }
+      switch (enc) {
+        case false:
+        case 'binary':
+          return buffer2bin(this);
+
+        case 'hex':
+          return buffer2hex(this);
+
+        case 'base64':
+          return btoa(buffer2bin(this));
+
+        case 'utf8':
+          enc = true;
+          break;
+      }
+
+      return buffer2str(this, enc);
     }
     var hasMultibyteRE = /([^\x00-\xFF]+)/;
     var isASCIIRE = /^[\x00-\x7F]+$/;
@@ -64,20 +103,22 @@
       return decodeURIComponent(escape(str));
     }
 
-    /*requires Uint8Array*/
+    /*requires Uint8Array, Int32Array*/
     function randomBytes(size) {
       var bits = -1 >>> 0;
-      var ret = new Uint8Array(size);
+      var len = size & 3;
+      len = len ? size + 4 - len : size;
+      var ret = new Uint8Array(len);
+      var words = new Int32Array(ret.buffer);
       var ent = Date.now();
-      var len = 0;
+      len >>= 2;
 
-      while (len < size) {
-        if ((len & 3) == 0) {
-          ent ^= Math.random() * bits;
-        }
+      while (len--) {
+        words[len] = ent ^= Math.random() * bits;
+      }
 
-        ret[len++] = ent & 0xFF;
-        ent >>>= 8;
+      if (ret.length > size) {
+        ret = ret.slice(0, size);
       }
 
       ret.toString = toString;
@@ -86,7 +127,8 @@
 
     // ---------------------------------------------------------------
 
-    cycleCrypt.randomBytes = randomBytes; // ---------------------------------------------------------------
+    cycleCrypt.randomBytes = randomBytes;
+    cycleCrypt.str2buffer = str2buffer; // ---------------------------------------------------------------
 
     /**
      * Simple encryption using xor, a key and salt.
@@ -243,7 +285,10 @@
       }
 
       return new Int32Array(str.buffer);
-    }
+    } // Unused
+    // function buf2str(buf) {
+    //     return buffer2str(new Uint8Array(buf.buffer));
+    // }
 
     return cycleCrypt;
 
