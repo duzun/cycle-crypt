@@ -61,7 +61,7 @@ app.get('/', function (req, res) {
     let message = 'Lorem Ipsum is simply dummy text of the printing industry...';
     let ciphered = cycleCrypt(key, message, true);
 
-    res.send(btoa(ciphered));
+    res.send(Buffer.from(ciphered).toString('base64'));
 });
 
 ```
@@ -77,7 +77,7 @@ let message = await fetch('/')
 .then(atob)
 .then((ciphered) => cycleCrypt(key, ciphered, false));
 
-console.log(message.toString('utf8'));
+console.log(message.toString('utf8')); // 'hex' | 'base64'
 ```
 
 It is also possible to do the reverse: encrypt on client and decrypt on server.
@@ -94,7 +94,7 @@ $ciphered = cycleCrypt($key, $message, $salt);
 
 // Have to send the salt to the client too
 echo json_encode([
-    'salt' => base64_encode($salt), 
+    'salt' => base64_encode($salt),
     'ciphered' => base64_encode($ciphered)
 ]);
 ```
@@ -106,6 +106,7 @@ echo json_encode([
 let message = cycleCrypt(key, ciphered, salt);
 ```
 
-On the JS end, `message` is an instance of `Uint8Array` with a custom `.toString()`.
+On the JS end, `message` is an instance of `Uint8Array` with a custom `.toString(encoding)`,
+where `encoding` is one of  'binary', 'hex', 'base64', 'utf8' or undefined (guess).
 
 For older browsers you should use a [DataView](https://gist.github.com/mika76/20b86c76afb77c35e0b4) polyfill.

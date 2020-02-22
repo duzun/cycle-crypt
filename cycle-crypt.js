@@ -6,6 +6,7 @@ import { str2buffer, buffer2str, toString } from './lib/string';
 
 // const INT32_MASK = -1 >>> 0;
 cycleCrypt.randomBytes = randomBytes;
+cycleCrypt.str2buffer = str2buffer;
 
 // ---------------------------------------------------------------
 /**
@@ -158,6 +159,7 @@ function str2buf(str) {
     return new Int32Array(str.buffer);
 }
 
-function buf2str(buf) {
-    return buffer2str(new Uint8Array(buf.buffer));
-}
+// Unused
+// function buf2str(buf) {
+//     return buffer2str(new Uint8Array(buf.buffer));
+// }
