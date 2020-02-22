@@ -1,6 +1,6 @@
 {
   "name": "cycle-crypt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple encryption algorithm by cycling the key and the salt while xor-ing the data",
   "module": "cycle-crypt.js",
   "main": "dist/cycle-crypt.js",
