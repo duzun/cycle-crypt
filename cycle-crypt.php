@@ -63,10 +63,9 @@ function cc32_mix_key($key, $rounds = 1)
         for ($i = $len; $i--;) {
             $k = $key[$ki = $i % $len] + $k;
             $k ^= $k << 13; // 19
-            $k ^= $k >> 17; // 15
+            $k ^= ($k & $INT32_MASK) >> 17; // 15
             $k ^= $k << 5; // 27
-            $k &= $INT32_MASK;
-            $key[$ki] = $k;
+            $key[$ki] = $k &= $INT32_MASK;
         }
     }
 
@@ -97,15 +96,15 @@ function cc32_salt_key($key, $salt, $count = 1)
             $s = $salt[$si = $i % $slen] + $s;
 
             $s ^= $s << 13; // 19
-            $s ^= $s >> 7; // 25
+            $s ^= ($s & $INT32_MASK) >> 7; // 25
 
             $k ^= $k << 11; // 21
-            $k ^= $k >> 8; // 24
+            $k ^= ($k & $INT32_MASK) >> 8; // 24
 
             $k += $s;
 
-            $key[$ki] = $k &= $INT32_MASK;
-            $salt[$si] = $s &= $INT32_MASK;
+            $key[$ki] =$k &= $INT32_MASK;
+            $salt[$si] =$s &= $INT32_MASK;
         }
     }
 

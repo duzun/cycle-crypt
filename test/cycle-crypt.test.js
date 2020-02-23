@@ -76,9 +76,7 @@ describe('.xorCrypt(key, data, salt=true)', () => {
 
     it('should decrypt data encrypted in PHP', () => {
         const atob = this.atob || ((str) => Buffer.from(str, 'base64').toString('binary'));
-        let i = 1;
         test_data.forEach(({key, salt, data, enc}) => {
-            if(i--<=0) return;
             key = atob(key);
             salt = salt ? atob(salt) : false;
             enc = atob(enc);
