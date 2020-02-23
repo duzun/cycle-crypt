@@ -124,3 +124,7 @@ Choose two or more ciphers `C1`, `C2` ... `Cn` from two or more vendors.
 When ciphering the message `M` with `C` = `M` ^ `C1` ^ `C2` ^ ... ^ `Cn`, the secrecy of the cipher-text `C` is not worse than the best of `Cn`.
 
 In other words, it can't hurt the secrecy when `xor`ing more ciphers.
+
+The theory behind this property is analysed and proven in my Masters Thesis:
+
+The sum **c** = r<sub>1</sub>  ⊕ r<sub>2</sub> ⊕ ... ⊕ r<sub>m</sub>, where **c**, r<sub>i</sub> ∊ 𝔹<sub>k</sub> (string of bits of length k), i=1,m, is a [perfect secret](https://www.wikiwand.com/en/One-time_pad#Perfect_secrecy) if and only if there is at least one r<sub>i</sub> perfect secret and the operation ⊕ is a [cryptographic safe](https://www.wikiwand.com/en/Cryptographic_hash_function) operation.
