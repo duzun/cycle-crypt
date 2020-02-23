@@ -21,8 +21,9 @@
       return chr.apply(String, buf);
     }
     function buffer2hex(buf) {
+      var bpe = buf.BYTES_PER_ELEMENT << 1;
       return buf.reduce(function (r, c) {
-        return r += c.toString(16).padStart(2, '0');
+        return r += (c >>> 0).toString(16).padStart(bpe, '0');
       }, '');
     }
     function buffer2str(buf, asUtf8) {
@@ -103,13 +104,13 @@
       return decodeURIComponent(escape(str));
     }
 
-    /*requires Uint8Array, Int32Array*/
+    /*requires Uint8Array, Uint32Array*/
     function randomBytes(size) {
       var bits = -1 >>> 0;
       var len = size & 3;
       len = len ? size + 4 - len : size;
       var ret = new Uint8Array(len);
-      var words = new Int32Array(ret.buffer);
+      var words = new Uint32Array(ret.buffer);
       var ent = Date.now();
       len >>= 2;
 
@@ -168,7 +169,7 @@
       if (dataLen & 3) {
         data = str2buf(data);
       } else {
-        data = new Int32Array(data.buffer);
+        data = new Uint32Array(data.buffer);
       }
 
       var len = key.length;
@@ -196,7 +197,7 @@
     /**
      * Use a variation of Xorshift+ to mix the key
      *
-     * @param   Int32Array $key List of int32 values representing the key
+     * @param   Uint32Array $key List of int32 values representing the key
      * @param   int   $rounds Number of rounds to process the key
      *
      * @return  array A mixed key
@@ -213,10 +214,10 @@
           k = key[ki] + k;
           k ^= k << 13; // 19
 
-          k ^= k >> 17; // 15
+          k ^= k >>> 17; // 15
 
           k ^= k << 5; // 27
-          // k &= INT32_MASK;
+          // k >>>= 0;
 
           key[ki] = k;
         }
@@ -227,8 +228,8 @@
     /**
      * Use a variation of Xorshift+ to salt the key
      *
-     * @param   Int32Array $key
-     * @param   Int32Array $salt
+     * @param   Uint32Array $key
+     * @param   Uint32Array $salt
      * @param   int   $rounds Number of rounds to mix the key
      *
      * @return  array A mixed key
@@ -251,14 +252,14 @@
           s = salt[si] + s;
           s ^= s << 13; // 19
 
-          s ^= s >> 7; // 25
+          s ^= s >>> 7; // 25
 
           k ^= k << 11; // 21
 
-          k ^= k >> 8; // 24
+          k ^= k >>> 8; // 24
+          // s >>>= 0;
 
-          k += s; // k &= INT32_MASK;
-          // s &= INT32_MASK;
+          k += s; // k >>>= 0;
 
           key[ki] = k;
           salt[si] = s;
@@ -284,7 +285,7 @@
         str = i;
       }
 
-      return new Int32Array(str.buffer);
+      return new Uint32Array(str.buffer);
     } // Unused
     // function buf2str(buf) {
     //     return buffer2str(new Uint8Array(buf.buffer));

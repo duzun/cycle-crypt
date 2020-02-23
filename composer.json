@@ -1,6 +1,6 @@
 {
   "name": "duzun/cycle-crypt",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Variable size symmetric key encryption algorithm",
   "type": "library",
   "license": "MIT",
