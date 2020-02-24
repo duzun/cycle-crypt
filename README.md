@@ -121,7 +121,7 @@ If you don't trust any encryption algorithm, here is a hint:
 
 Choose two or more ciphers `C1`, `C2` ... `Cn` from two or more vendors.
 
-When ciphering the message `M` with `C` = `M` ^ `C1` ^ `C2` ^ ... ^ `Cn`, the secrecy of the cipher-text `C` is not worse than the best of `Cn`.
+When ciphering the message `M` with `C` = `M` ^ `C1` ^ `C2` ^ ... ^ `Cn`, the secrecy of the cipher-text `C` is not worse than the best of `Ci`.
 
 In other words, it can't hurt the secrecy when `xor`ing more ciphers.
 
