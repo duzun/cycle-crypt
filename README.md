@@ -113,6 +113,30 @@ where `encoding` is one of  'binary', 'hex', 'base64', 'utf8' or undefined (gues
 
 For older browsers you should use a [DataView](https://gist.github.com/mika76/20b86c76afb77c35e0b4) polyfill.
 
+### Encrypt in chunks
+
+Here is an example of encrypting a big file in small chunks,
+thus avoid using lots of memory.
+
+```php
+use duzun\CycleCrypt;
+
+$cc = new CycleCrypt($key/*, $salt=true*/);
+$salt = $cc->getSalt(); // required for decryption
+$chunkSize = $cc->getKeyBytesSize();
+
+$in = fopen('/path/to/file', '+r');
+$out = fopen('/path/to/encrypted_file', '+w');
+while(!feof($in)) {
+    $chunk = fread($in, $chunkSize);
+    fwrite($out, $cc($chunk));
+}
+fclose($in);
+fclose($out);
+
+file_put_contents('/path/to/encrypted_file.salt', $salt)
+```
+
 ## Warning!
 
 If you deal with a security critical application, please consider using one of the NIST approved standard encryption algorithms like [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).
@@ -128,3 +152,11 @@ In other words, it can't hurt the secrecy when `xor`ing more ciphers.
 The theory behind this property is analysed and proven in my Masters Thesis:
 
 The sum **c** = r<sub>1</sub>  ⊕ r<sub>2</sub> ⊕ ... ⊕ r<sub>m</sub>, where **c**, r<sub>i</sub> ∊ 𝔹<sub>k</sub> (string of bits of length k), i=1,m, is a [perfect secret](https://www.wikiwand.com/en/One-time_pad#Perfect_secrecy) if and only if there is at least one r<sub>i</sub> perfect secret and the operation ⊕ is a [cryptographic safe](https://www.wikiwand.com/en/Cryptographic_hash_function) operation.
+
+## To Do
+
+The JS version uses Uint32Array and Uint8Array, which use little endian or big endian, depending on hardware. The current implementation has been tested in little endian HW only!
+
+Have to implement the alternative to big endian too.
+
+[link](https://stackoverflow.com/questions/7869752/javascript-typed-arrays-and-endianness)

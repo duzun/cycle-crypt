@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace duzun;
 use function duzun\cycleCrypt;
+use duzun\CycleCrypt;
 use PHPUnit\Framework\TestCase;
 
 // When run with ../vendor/bin/phpunit the duzun\cycleCrypt is autoloaded,
@@ -10,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 function_exists('duzun\\cycleCrypt') or
 require __DIR__ . '/../cycle-crypt.php';
 
-class TestValuesHelpers extends TestCase {
+class TestCycleCrypt extends TestCase {
 
     public function test_cycleCrypt() {
         $test_data = [];
@@ -55,6 +56,47 @@ class TestValuesHelpers extends TestCase {
 
         $out = json_encode($test_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         file_put_contents(__DIR__ . '/test-data.json', $out);
+    }
+
+    public function test_CycleCrypt_invoke() {
+        $key = 'a test key of 5 ints';
+        $encrypt = new CycleCrypt($key);
+        $decrypt = new CycleCrypt($key, $encrypt->getSalt());
+        $encrypt2 = new CycleCrypt($key, $encrypt->getSalt());
+
+        $messages = [
+            'word',
+            'h',
+            'new',
+            'ab',
+            'cde',
+            '1',
+            '12',
+            '123',
+            '1234',
+            '12345',
+            '123456',
+            '1234567',
+            '12345678',
+            '123456789',
+            $key,
+            $encrypt::genSalt() . 'x',
+        ];
+        $messages[] = implode('', $messages);
+
+        $ciphered = [];
+        foreach($messages as $message) {
+            $cipherText = $encrypt($message);
+            $newMessage = $decrypt($cipherText);
+            $this->assertEquals($message, $newMessage);
+            $this->assertNotEquals($cipherText, $message);
+
+            $ciphered[] = $cipherText;
+        }
+
+        $ciphered = implode('', $ciphered);
+        $newCiphered = $encrypt2(implode('', $messages));
+        $this->assertEquals($newCiphered, $ciphered);
     }
 
 }

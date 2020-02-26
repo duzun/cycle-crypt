@@ -11,6 +11,9 @@
     }
   ],
   "autoload": {
+    "psr-4": {
+      "duzun\\": "./"
+    },
     "files": [
       "cycle-crypt.php"
     ],
