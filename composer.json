@@ -1,6 +1,6 @@
 {
   "name": "duzun/cycle-crypt",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Variable size symmetric key encryption algorithm",
   "type": "library",
   "license": "MIT",
@@ -21,6 +21,9 @@
       "/test/"
     ]
   },
+  "bin": [
+    "bin/cycry.php"
+  ],
   "require": {},
   "require-dev": {
     "phpunit/phpunit": "*"

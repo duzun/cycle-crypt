@@ -123,7 +123,7 @@ use duzun\CycleCrypt;
 
 $cc = new CycleCrypt($key/*, $salt=true*/);
 $salt = $cc->getSalt(); // required for decryption
-$chunkSize = $cc->getKeyBytesSize();
+$chunkSize = $cc->getKeyByteSize();
 
 $in = fopen('/path/to/file', '+r');
 $out = fopen('/path/to/encrypted_file', '+w');
@@ -136,6 +136,31 @@ fclose($out);
 
 file_put_contents('/path/to/encrypted_file.salt', $salt)
 ```
+
+You don't have to write the code to encrypt a file for yourself, cause there is a CLI for that:
+
+```sh
+composer global require duzun/cycle-crypt
+
+cycry -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
+```
+
+## CLI Usage
+
+    cycry -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
+    cycry -h|--help
+
+    -h, --help      Show this help
+    -k, --key       The encryption key. Could be hex if starts with '0x'.
+    -s, --salt      Random bytes to be used as salt. Could be hex if starts with '0x'.
+    -si, --salt-in  Filename or - from where to read the salt.
+    -so, --salt-out Filename or - where to output the generated salt.
+    -i, --in        Input file to encrypt or - for STDIN
+    -o, --out       Output file or - for STDOUT
+
+    You can not combine -s, -so and -si, use just one of them.    
+
+    -i and -o default to -
 
 ## Warning!
 

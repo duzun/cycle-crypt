@@ -17,6 +17,21 @@ test_php:
 		@phpunit ./test/; \
 	fi;
 
+test_php_cli:
+	@cp -f -- ./bin/cycry.php /tmp/cycry.in && \
+		./bin/cycry.php -k '********' -so /tmp/cycry.salt -i /tmp/cycry.in -o /tmp/cycry.out && \
+		! diff -s /tmp/cycry.in /tmp/cycry.out && \
+		[ -s /tmp/cycry.salt ] && \
+		./bin/cycry.php -k '********' -si /tmp/cycry.salt -i /tmp/cycry.out -o /tmp/cycry.dec && \
+		diff -q /tmp/cycry.in /tmp/cycry.dec && \
+		echo success && rm -f -- /tmp/cycry.* || \
+		echo fail
+
+# See https://www.fourmilab.ch/random/
+test_ent:
+	test/ent-test.sh
+
+
 install_node:
 	@if [ -n "$(NODE_RELEASE)" ]; then \
 		echo "node $(NODE_RELEASE)"; \

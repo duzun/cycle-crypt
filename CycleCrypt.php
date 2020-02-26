@@ -115,7 +115,7 @@ class CycleCrypt
      *
      * @return  int
      */
-    public function getKeyBytesSize() {
+    public function getKeyByteSize() {
         return count($this->key) << 2;
     }
 
