@@ -28,9 +28,11 @@ test_php_cli:
 		echo fail
 
 # See https://www.fourmilab.ch/random/
-test_ent:
+ent_test:
 	test/ent-test.sh
 
+dieharder_test:
+	@cat /dev/zero | php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 | dieharder -a -g 200
 
 install_node:
 	@if [ -n "$(NODE_RELEASE)" ]; then \
