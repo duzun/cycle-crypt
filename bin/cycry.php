@@ -51,7 +51,7 @@ final class CyCry
                     else {
                         $sout = self::_getStream($args['salt-out'], false);
                     }
-                    fwrite(
+                    self::_writeStream(
                         $sout,
                         $sout === STDOUT || $sout === STDERR
                             ? "salt: 0x" . bin2hex($salt) . PHP_EOL
@@ -63,7 +63,7 @@ final class CyCry
                     if(!$sin) return false;
 
                     $salt = '';
-                    do $salt = fread($sin, 1024); while(!feof($sin));
+                    while(!feof($sin)) $salt = fread($sin, 1024);
                 }
             } else {
                 $salt = $args['salt'];
@@ -82,12 +82,12 @@ final class CyCry
             }
 
             $cc = new CycleCrypt($key, $salt);
-            $chunkSize = $cc->getKeyByteSize();
+            $keyByteSize = $cc->getKeyByteSize();
+            $chunkSize = intval(ceil(128 * 1024 / $keyByteSize) * $keyByteSize);
 
-            while (!feof($in)) {
-                $buf = fread($in, $chunkSize);
-                $enc = $cc($buf);
-                fwrite($out, $enc);
+            while (!feof($in) and $buf = fread($in, $chunkSize)) {
+                $written = self::_writeStream($out, $cc($buf));
+                if($written < strlen($buf)) break;
             }
         }
         finally {
@@ -161,7 +161,7 @@ EOS;
         if($fn == '-') return $in ? STDIN : STDOUT;
         if(isset(self::$_stdIO[$fn])) return self::$_stdIO[$fn];
 
-        $io = fopen($fn, $in ? 'r' : 'w');
+        $io = fopen($fn, $in ? 'rb' : 'wb');
         if($io) {
             self::$_openIO[] = $io;
         }
@@ -174,4 +174,24 @@ EOS;
         foreach(self::$_openIO as $io) $open -= fclose($io);
         return $open;
     }
+
+    private static function _writeStream($fp, $string, $retries=3, $usleep=3000) {
+        $length = strlen($string);
+        $fails = 0;
+        for ($written = 0; $written < $length && $fails <= $retries; $written += $fwrite) {
+            $fwrite = fwrite($fp, substr($string, $written));
+            if($fwrite) {
+                $fails = 0;
+            }
+            else {
+                if ($fwrite === false) {
+                    return $written;
+                }
+                ++$fails;
+                usleep($usleep);
+            }
+        }
+        return $written;
+    }
+
 }

@@ -24,15 +24,26 @@ test_php_cli:
 		[ -s /tmp/cycry.salt ] && \
 		./bin/cycry.php -k '********' -si /tmp/cycry.salt -i /tmp/cycry.out -o /tmp/cycry.dec && \
 		diff -q /tmp/cycry.in /tmp/cycry.dec && \
-		echo success && rm -f -- /tmp/cycry.* || \
-		echo fail
+		echo success && rm -f -- /tmp/cycry.*
 
 # See https://www.fourmilab.ch/random/
 ent_test:
 	test/ent-test.sh
 
+# Use a bad key of 128 bits
 dieharder_test:
-	@cat /dev/zero | php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 | dieharder -a -g 200
+	@cat /dev/zero \
+		| php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
+		| dieharder -a -g 200
+
+# Warning! testu01_gateway doesn't work for some reason, can't pipe data in :(
+# See https://github.com/blep/testu01_gateway
+# Use a bad key of 128 bits
+testu01:
+	@docker run --rm -v "`pwd`/vendor/bin:/tmp/cp" --entrypoint="bash" blep/testu01:latest -c 'cp /root/testu01_gateway /tmp/cp/' && \
+	cat /dev/zero \
+		| php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
+		| ./vendor/bin/testu01_gateway --small-crush
 
 install_node:
 	@if [ -n "$(NODE_RELEASE)" ]; then \
