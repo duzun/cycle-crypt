@@ -139,20 +139,28 @@ file_put_contents('/path/to/encrypted_file.salt', $salt)
 
 You don't have to write the code to encrypt a file for yourself, cause there is a CLI for that:
 
+Node.js
+
 ```sh
 npm install -g cycle-crypt
-# or
+
+cycle-crypt -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
+```
+
+PHP
+
+```sh
 composer global require duzun/cycle-crypt
 
-cycry -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
+cycry.php -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
 ```
 
 Note: The Node.js CLI version is much faster than the PHP one.
 
 ## CLI Usage
 
-    cycry -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
-    cycry -h|--help
+    cycle-crypt -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
+    cycle-crypt -h|--help
 
     -h, --help      Show this help
     -k, --key       The encryption key. Could be hex if starts with '0x'.
