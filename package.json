@@ -16,6 +16,7 @@
     "lib/*",
     "dist/*",
     "bin/*.js",
+    "stream.js",
     "*.md"
   ],
   "scripts": {
