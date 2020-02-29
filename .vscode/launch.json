@@ -5,6 +5,46 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "name": "vscode-jest-tests",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "args": [
+        "--runInBand"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "mocha",
+      "program": "${workspaceFolder}/node_modules/.bin/mocha",
+      "args": [
+        "--reporter",
+        "spec"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test JS",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "test_js"
+      ],
+      "port": 9229,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
       "name": "PHP Unit",
       "type": "php",
       "request": "launch",

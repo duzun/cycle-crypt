@@ -1,6 +1,6 @@
 {
   "name": "cycle-crypt",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Variable size symmetric key encryption algorithm",
   "module": "cycle-crypt.js",
   "main": "dist/cycle-crypt.js",
@@ -9,17 +9,20 @@
   "publishConfig": {
     "access": "public"
   },
+  "bin": "bin/cycry.js",
   "files": [
     "cycle-crypt.*",
+    "CycleCrypt.*",
     "lib/*",
     "dist/*",
+    "bin/*.js",
     "*.md"
   ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "test_php": "php ./vendor/bin/phpunit ./test/",
+    "test_php": "make test_php",
     "test_js": "npx mocha --reporter spec",
-    "test": "npm run test_php && npm run test_js",
+    "test": "make test_php && npm run test_js && make test_js_cli && make test_php_cli",
     "coverage": "npx nyc --reporter=lcov --reporter=text-summary npm run test_js",
     "jest": "npx jest",
     "jest:watch": "npx jest --watch",

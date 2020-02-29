@@ -4,6 +4,7 @@
 
 dir=$(dirname "$(realpath "$0")")
 base=$(dirname "$dir")
+cycry="$base/bin/cycry.${1:-js}"
 
 # Download the ent binary when missing
 if ! ENT="$(command -v ent)"; then
@@ -21,18 +22,13 @@ if ! ENT="$(command -v ent)"; then
 fi
 
 timer() {
-    now=$(date +%s.%N)
-    if [ -n "$1" ]; then
-        scale=$2
-        [ -n "$scale" ] && scale="scale=$scale; "
-        echo "$scale$now - $1" | bc -l
-    else
-        echo "$now"
-    fi
+    now="$(date +%s.%N)/.001"
+    [ -n "$1" ] && now="$now-$1"
+    echo "scale=0; $now" | bc -l
 }
 
 speed() {
-    echo "scale=2; $1 / $2 / 1048576" | bc -l
+    echo "scale=2; $1 / $2 / 1048.576" | bc -l
 }
 
 # We use a very small sample size (10Mb) for speed
@@ -47,40 +43,40 @@ if [ -n "$ENT" ]; then
     _t_=$(timer)
     head -c $size /dev/urandom | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in $(echo "scale=2; $_t_ / 1" | bc -l)s, $(speed "$size" "$_t_")MBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 
     echo;
     echo '----- No salt, 32bit key -----';
     _t_=$(timer)
-    head -c $size /dev/zero | php "$base/bin/cycry.php" -s 0x00000000 -k "$key32" | "$ENT"
+    head -c $size /dev/zero | "$cycry" -s 0x00000000 -k "$key32" | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in ${_t_}s, $(speed "$size" "$_t_")MBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 
     echo;
     echo '----- No salt, 128bit key -----';
     _t_=$(timer)
-    head -c $size /dev/zero | php "$base/bin/cycry.php" -s 0x00000000 -k "$key128" | "$ENT"
+    head -c $size /dev/zero | "$cycry" -s 0x00000000 -k "$key128" | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in ${_t_}s, $(speed "$size" "$_t_")MMBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 
     echo;
     echo '----- Salted 128bit key -----';
     _t_=$(timer)
-    head -c $size /dev/zero | php "$base/bin/cycry.php" -so /dev/null -k "$key128" | "$ENT"
+    head -c $size /dev/zero | "$cycry" -so /dev/null -k "$key128" | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in ${_t_}s, $(speed "$size" "$_t_")MBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 
     echo;
     echo '----- No salt, 1024bit key -----';
     _t_=$(timer)
-    head -c $size /dev/zero | php "$base/bin/cycry.php" -s 0x00000000 -k "$key1024" | "$ENT"
+    head -c $size /dev/zero | "$cycry" -s 0x00000000 -k "$key1024" | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in ${_t_}s, $(speed "$size" "$_t_")MBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 
     echo;
     echo '----- Salted 1024bit key -----';
     _t_=$(timer)
-    head -c $size /dev/zero | php "$base/bin/cycry.php" -so /dev/null -k "$key1024" | "$ENT"
+    head -c $size /dev/zero | "$cycry" -so /dev/null -k "$key1024" | "$ENT"
     _t_=$(timer "$_t_")
-    echo "in ${_t_}s, $(speed "$size" "$_t_")MBps"
+    echo "in ${_t_}ms, $(speed "$size" "$_t_")MBps"
 fi

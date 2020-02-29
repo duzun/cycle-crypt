@@ -28,8 +28,7 @@ final class CyCry
     {
         $args = self::readArgv();
         if (empty($args) || !empty($args['help'])) {
-            self::usage();
-            return;
+            return self::usage();
         }
 
         try {
@@ -39,37 +38,41 @@ final class CyCry
             $out = self::_getStream($args['out'] ?? '-', false);
             if(!$out) return false;
 
+            if(!empty($args['salt-out'])) {
+                $sout = self::_getStream($args['salt-out'], false);
+            }
+
             if (empty($args['salt'])) {
                 if(empty($args['salt-in'])) {
                     // When there in no salt, generate it and save/show it.
                     $salt = CycleCrypt::genSalt(implode('~', $args));
 
                     // When there is no explicit output for salt, use STDOUT or STDERR
-                    if(empty($args['salt-out'])) {
+                    if(empty($sout)) {
                         $sout = $out === STDOUT ? STDERR : STDOUT;
                     }
-                    else {
-                        $sout = self::_getStream($args['salt-out'], false);
-                    }
-                    self::_writeStream(
-                        $sout,
-                        $sout === STDOUT || $sout === STDERR
-                            ? "salt: 0x" . bin2hex($salt) . PHP_EOL
-                            : $salt
-                    );
                 }
                 else {
                     $sin = self::_getStream($args['salt-in'], true);
                     if(!$sin) return false;
 
                     $salt = '';
-                    while(!feof($sin)) $salt = fread($sin, 1024);
+                    while(!feof($sin)) $salt .= fread($sin, 1024);
                 }
             } else {
                 $salt = $args['salt'];
                 if (strncmp($salt, '0x', 2) == 0) {
                     $salt = hex2bin(substr($salt, 2));
                 }
+            }
+
+            if(!empty($sout)) {
+                self::_writeStream(
+                    $sout,
+                    $sout === STDOUT || $sout === STDERR
+                        ? "salt: 0x" . bin2hex($salt) . PHP_EOL
+                        : $salt
+                );
             }
 
             if (empty($args['key'])) {
@@ -111,7 +114,7 @@ Usage:
     -i, --in        Input file to encrypt or - for STDIN
     -o, --out       Output file or - for STDOUT
 
-    You can not combine -s, -so and -si, use just one of them.
+    You can not combine -s and -si, use just one of them.
 
     -i and -o default to -
 
@@ -127,7 +130,7 @@ EOS;
         foreach ($argv as $i => $v) {
             if ($i < 1) continue;
 
-            if (strncmp($v, '-', 1) == 0) {
+            if ($v != '-' && strncmp($v, '-', 1) == 0) {
                 if (isset($_a) && !isset($ret[$_a])) {
                     $ret[$_a] = true;
                 }

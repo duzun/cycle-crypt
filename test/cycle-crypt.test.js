@@ -4,6 +4,7 @@
 
 const esm = require('esm')(module);
 const { default: cycleCrypt } = esm('../cycle-crypt');
+const { CycleCrypt } = cycleCrypt;
 
 const { expect } = require('chai');
 const crypto = require('crypto');
@@ -11,9 +12,9 @@ const crypto = require('crypto');
 const test_data = require('./test-data.json');
 
 const test_cases = [
-    ["\1\0\0\0", "\0\0\0\0", "\0\0\0\0"],
-    ["\0\0\0\0", "\0\0\0\0", "\1\2\3\4"],
-    ["\1\0\0\0", '© dățâ to €ncryptș' + Date.now(), "\0\0\0\0"],
+    ["\x01\x00\x00\x00", "\x00\x00\x00\x00", "\x00\x00\x00\x00"],
+    ["\x00\x00\x00\x00", "\x00\x00\x00\x00", "\x01\x02\x03\x04"],
+    ["\x01\x00\x00\x00", '© dățâ to €ncryptș' + Date.now(), "\x00\x00\x00\x00"],
 
     ['key', '© dățâ to €ncryptș ' + Date.now(), 'salty'],
     ['test', '© dățâ to €ncryptș ' + Date.now(), true],
@@ -27,7 +28,7 @@ const test_cases = [
     [hash('sha256', '256 bit key', true), ('© dățâ to €ncryptș could be longer than the key ').repeat(1024) + Date.now(), 'my salt is better than any salt :)' + Math.random()],
 ];
 
-describe('.xorCrypt(key, data, salt=true)', () => {
+describe('.cycleCrypt(key, data, salt=true)', () => {
     it('should encrypt and decrypt strings', () => {
         test_cases.forEach(([key, raw, salt], idx) => {
             let enc = cycleCrypt(key, raw, salt);
@@ -36,6 +37,30 @@ describe('.xorCrypt(key, data, salt=true)', () => {
 
             let dec = cycleCrypt(key, enc, salt === true ? false : salt);
             expect(String(dec)).to.equal(String(raw));
+        });
+    });
+
+    it('should encrypt & decrypt Buffers', () => {
+        let key = Buffer.from('The key is secret and safe!?', 'utf8');
+        let salt = Buffer.from('random data: 1234567');
+        let buf = Buffer.from('t€șț đătâ to be encrypted', 'utf8');
+
+        [
+            [key, buf, salt],
+
+            // Buffer.slice() uses the same ArrayBuffer,
+            // but could get unaligned memory
+            [key.slice(3), buf.slice(5), salt.slice(2)],
+
+        ].forEach(([key, buf, salt]) => {
+
+            let enc = cycleCrypt(key, buf, salt);
+            expect(enc.length).to.equal(buf.length);
+            expect(Buffer.compare(enc, buf)).not.to.equal(0);
+
+            let dec = Buffer.from(cycleCrypt(key, enc, salt));
+            expect(Buffer.compare(dec, buf)).to.equal(0);
+            expect(String(dec)).to.equal(String(buf));
         });
     });
 
@@ -76,7 +101,7 @@ describe('.xorCrypt(key, data, salt=true)', () => {
 
     it('should decrypt data encrypted in PHP', () => {
         const atob = this.atob || ((str) => Buffer.from(str, 'base64').toString('binary'));
-        test_data.forEach(({key, salt, data, enc}) => {
+        test_data.forEach(({ key, salt, data, enc }) => {
             key = atob(key);
             salt = salt ? atob(salt) : false;
             enc = atob(enc);
@@ -88,8 +113,8 @@ describe('.xorCrypt(key, data, salt=true)', () => {
 
 function hash($algo, $data, $raw_output) {
     const _hash = crypto.createHash($algo);
-    if ( $data === undefined ) return _hash;
-    if ( Array.isArray($data) ) {
+    if ($data === undefined) return _hash;
+    if (Array.isArray($data)) {
         $data.forEach(($d) => {
             $d != undefined && _hash.update(Buffer.isBuffer($d) ? $d : Buffer.from($d, 'utf8'));
         });
@@ -102,7 +127,7 @@ function hash($algo, $data, $raw_output) {
 }
 
 function toString(buf, encoding) {
-    if(encoding === false) encoding = 'binary';
-    if(encoding === true) encoding = 'utf8';
+    if (encoding === false) encoding = 'binary';
+    if (encoding === true) encoding = 'utf8';
     return Buffer.from(buf.buffer).toString(encoding);
 }

@@ -5,7 +5,7 @@ all: test_all build
 build:
 	@npm run --silent build
 
-test_all: test_php test_js
+test_all: test_php test_php_cli test_js test_js_cli
 
 test_js:
 	@npm run --silent test_js
@@ -18,20 +18,44 @@ test_php:
 	fi;
 
 test_php_cli:
-	@cp -f -- ./bin/cycry.php /tmp/cycry.in && \
-		./bin/cycry.php -k '********' -so /tmp/cycry.salt -i /tmp/cycry.in -o /tmp/cycry.out && \
-		! diff -s /tmp/cycry.in /tmp/cycry.out && \
-		[ -s /tmp/cycry.salt ] && \
-		./bin/cycry.php -k '********' -si /tmp/cycry.salt -i /tmp/cycry.out -o /tmp/cycry.dec && \
-		diff -q /tmp/cycry.in /tmp/cycry.dec && \
-		echo success && rm -f -- /tmp/cycry.*
+	@echo bin/cycry.php && \
+		cp -f -- ./bin/cycry.php /tmp/cycry.pin && \
+		cat /tmp/cycry.pin | ./bin/cycry.php -k 'p4$0rd5*' -so /tmp/cycry.psalt > /tmp/cycry.pout && \
+		! diff -s /tmp/cycry.pin /tmp/cycry.pout && \
+		[ -s /tmp/cycry.psalt ] && \
+		cat /tmp/cycry.psalt | ./bin/cycry.php -k 'p4$0rd5*' -si - -i /tmp/cycry.pout -o /tmp/cycry.pdec && \
+		diff -q /tmp/cycry.pin /tmp/cycry.pdec && \
+		echo success && rm -f -- /tmp/cycry.p* && echo;
+
+test_js_cli:
+	@if [ -n "$(NODE_RELEASE)" ] || hash node; then \
+		echo bin/cycry.js && \
+		cp -f -- ./bin/cycry.js /tmp/cycry.jin && \
+		cat /tmp/cycry.jin | ./bin/cycry.js -k 'p4$0rd5*' -so /tmp/cycry.jsalt > /tmp/cycry.jout && \
+		! diff -s /tmp/cycry.jin /tmp/cycry.jout && \
+		[ -s /tmp/cycry.jsalt ] && \
+		./bin/cycry.js -k 'p4$0rd5*' -si /tmp/cycry.jsalt -i /tmp/cycry.jout -o /tmp/cycry.jdec && \
+		diff -q /tmp/cycry.jin /tmp/cycry.jdec && \
+		cat /tmp/cycry.jsalt | ./bin/cycry.js -k 'p4$0rd5*' -si - -so /tmp/cycry.jsalt1 -i /tmp/cycry.jout > /tmp/cycry.jdec && \
+		diff -q /tmp/cycry.jin /tmp/cycry.jdec && \
+		diff -q /tmp/cycry.jsalt1 /tmp/cycry.jsalt && \
+		echo success && rm -f -- /tmp/cycry.j* && echo; \
+	fi
 
 # See https://www.fourmilab.ch/random/
 ent_test:
-	test/ent-test.sh
+	test/ent-test.sh js
 
 # Use a bad key of 128 bits
-dieharder_test:
+dieharder_js:
+	@cat /dev/zero \
+		| ./bin/cycry.js -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
+		| dieharder -a -g 200
+
+# Use a bad key of 128 bits
+# Note: PHP CLI is ~10x slower than Node.js :(
+# 		This test could run hours or days, so better run the dieharder_js version
+dieharder_php:
 	@cat /dev/zero \
 		| php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
 		| dieharder -a -g 200
@@ -55,15 +79,17 @@ install_node:
 	fi
 
 npm_install:
-	@if [ -n "$(NODE_RELEASE)" ]; then \
+	@if [ -n "$(NODE_RELEASE)" ] || hash npm; then \
 		npm i; \
 	fi
 
 coverage_js:
-	@if [ -n "$(NODE_RELEASE)" ]; then \
+	@if [ -n "$(NODE_RELEASE)" ] || hash npm; then \
 		[ -s node_modules ] || npm i; \
 		npm run coverage; \
 	fi
 
 codecov:
-	@if [ -n "$(NODE_RELEASE)" ]; then npx codecov; fi
+	@if [ -n "$(NODE_RELEASE)" ] || hash npx; then \
+		npx codecov; \
+	fi

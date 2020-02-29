@@ -140,10 +140,14 @@ file_put_contents('/path/to/encrypted_file.salt', $salt)
 You don't have to write the code to encrypt a file for yourself, cause there is a CLI for that:
 
 ```sh
+npm install -g cycle-crypt
+# or
 composer global require duzun/cycle-crypt
 
 cycry -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
 ```
+
+Note: The Node.js CLI version is much faster than the PHP one.
 
 ## CLI Usage
 
@@ -158,7 +162,7 @@ cycry -k '**** ****' -s 'the salt' -i /path/to/file -o /path/to/encrypted_file
     -i, --in        Input file to encrypt or - for STDIN
     -o, --out       Output file or - for STDOUT
 
-    You can not combine -s, -so and -si, use just one of them.    
+    You can not combine -s and -si, use just one of them.    
 
     -i and -o default to -
 

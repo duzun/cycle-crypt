@@ -41,6 +41,7 @@ install:
 script:
     - make test_php
     - make test_php_cli
+    - make test_js_cli
     - make coverage_js
 
 after_script:
