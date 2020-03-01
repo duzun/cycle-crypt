@@ -1,0 +1,17 @@
+Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+
+JS
+
+- No salt, 32bit   key: in 1711ms, 278.68MBps
+- No salt, 128bit  key: in 1173ms, 406.51MBps
+- Salted   128bit  key: in 1272ms, 374.87MBps
+- No salt, 1024bit key: in 1142ms, 417.54MBps
+- Salted   1024bit key: in 1160ms, 411.06MBps
+
+PHP
+
+- No salt, 32bit   key: in 3346ms, 1.42MBps
+- No salt, 128bit  key: in 1231ms, 3.87MBps
+- Salted   128bit  key: in 1264ms, 3.77MBps
+- No salt, 1024bit key: in 597ms, 7.98MBps
+- Salted   1024bit key: in 592ms, 8.05MBps
