@@ -42,6 +42,17 @@ test_js_cli:
 		echo success && rm -f -- /tmp/cycry.j* && echo; \
 	fi
 
+speed_report:
+	@(cd ./test && \
+		. ./util.sh && cpu_model && \
+		echo && \
+		echo 'JS' && \
+		./speed.sh js && \
+		echo && \
+		echo 'PHP' && \
+		./speed.sh php 5000000 \
+	) | tee test/speed.txt
+
 # See https://www.fourmilab.ch/random/
 ent_test:
 	test/ent-test.sh js
