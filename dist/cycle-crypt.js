@@ -142,12 +142,11 @@
      *              If TRUE, generate salt.
      */
 
-    function CycleCrypt(key) {
-      var salt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    function CycleCrypt(key, salt) {
       var self = this;
       key = str2buf(key);
 
-      if (salt === true) {
+      if (salt === true || salt === undefined) {
         salt = randomBytes(Math.min(256, key.byteLength << 1));
       }
 
@@ -176,9 +175,7 @@
           var klen = key.length;
           var len = data.length;
 
-          for (var i = 0, k = 0; i < len; ++i, ++k) {
-            // let k = i % klen;
-            if (k === klen) k = 0;
+          for (var i = 0, k = 0; i < len; ++i, ++k === klen && (k = 0)) {
             if (!k) mixKey(key);
             data[i] ^= key[k];
           }
@@ -218,10 +215,10 @@
      * @return  array A mixed key
      */
 
-    function mixKey(key) {
-      var rounds = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    function mixKey(key, rounds) {
       var len = key.length;
       var k = len > 1 ? key[len - 1] : 0;
+      if (rounds == undefined) rounds = 1;
 
       while (rounds-- > 0) {
         for (var $i = len; $i--;) {
@@ -251,8 +248,7 @@
      */
 
 
-    function saltKey(key, salt) {
-      var rounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+    function saltKey(key, salt, rounds) {
       var klen = key.length;
       var slen = salt.length;
       if (!slen) return key; // make a copy to avoid altering the input salt
@@ -260,6 +256,7 @@
       salt = salt.slice();
       var k = klen > 1 ? key[klen - 1] : 0;
       var s = slen > 1 ? salt[slen - 1] : 0;
+      if (rounds == undefined) rounds = 1;
 
       while (rounds-- > 0) {
         for (var i = Math.max(klen, slen); i--;) {
@@ -342,6 +339,8 @@
         var i = data[0];
         salt = data.slice(1, ++i);
         data = data.slice(i);
+      } else if (salt === undefined) {
+        salt = true;
       }
 
       var cc = new CycleCrypt(key, salt);
