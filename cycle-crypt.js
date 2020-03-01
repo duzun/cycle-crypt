@@ -30,6 +30,9 @@ export default function cycleCrypt(key, data, salt = true) {
         salt = data.slice(1, ++i);
         data = data.slice(i);
     }
+    else if (salt === undefined) {
+        salt = true;
+    }
 
     const cc = new CycleCrypt(key, salt);
     data = cc._(data);

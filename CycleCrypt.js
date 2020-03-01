@@ -13,11 +13,11 @@ import { str2buffer, view8, toString } from './lib/string';
  *              If a string, use it as salt.
  *              If TRUE, generate salt.
  */
-export default function CycleCrypt(key, salt = true) {
+export default function CycleCrypt(key, salt) {
     const self = this;
 
     key = str2buf(key);
-    if (salt === true) {
+    if (salt === true || salt === undefined) {
         salt = randomBytes(Math.min(256, key.byteLength << 1));
     }
     self.salt = salt;
@@ -45,9 +45,7 @@ Object.defineProperties(CycleCrypt.prototype, {
             const key = this._key;
             let klen = key.length;
             let len = data.length;
-            for (let i = 0, k=0; i < len; ++i, ++k) {
-                // let k = i % klen;
-                if(k === klen) k = 0;
+            for (let i = 0, k = 0; i < len; ++i, ++k === klen && (k = 0)) {
                 if (!k) mixKey(key);
                 data[i] ^= key[k];
             }
@@ -85,9 +83,11 @@ CycleCrypt.str2buf = str2buf; // Uint32Array
  *
  * @return  array A mixed key
  */
-function mixKey(key, rounds = 1) {
+function mixKey(key, rounds) {
     let len = key.length;
     let k = len > 1 ? key[len - 1] : 0;
+
+    if (rounds == undefined) rounds = 1;
     while (rounds-- > 0) {
         for (let $i = len; $i--;) {
             let ki = $i % len;
@@ -112,7 +112,7 @@ function mixKey(key, rounds = 1) {
  *
  * @return  array A mixed key
  */
-function saltKey(key, salt, rounds = 1) {
+function saltKey(key, salt, rounds) {
     let klen = key.length;
     let slen = salt.length;
     if (!slen) return key;
@@ -123,6 +123,7 @@ function saltKey(key, salt, rounds = 1) {
     let k = klen > 1 ? key[klen - 1] : 0;
     let s = slen > 1 ? salt[slen - 1] : 0;
 
+    if (rounds == undefined) rounds = 1;
     while (rounds-- > 0) {
         for (let i = Math.max(klen, slen); i--;) {
             let ki = i % klen;
