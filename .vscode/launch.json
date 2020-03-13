@@ -19,6 +19,19 @@
     },
     {
       "type": "node",
+      "name": "rollup",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/rollup",
+      "args": [
+        "-c", "rollup.config.js"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true
+    },
+    {
+      "type": "node",
       "request": "launch",
       "name": "mocha",
       "program": "${workspaceFolder}/node_modules/.bin/mocha",

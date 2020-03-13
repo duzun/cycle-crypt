@@ -30,6 +30,7 @@ cache:
         - $HOME/.composer/cache
         - $HOME/.npm
         - node_modules
+    timeout: 1440
 
 before_script:
     - make install_node

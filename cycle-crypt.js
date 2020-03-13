@@ -2,7 +2,7 @@
 /*requires Uint8Array, Uint32Array*/
 // ---------------------------------------------------------------
 import CycleCrypt from './CycleCrypt';
-import { str2buffer, view8 } from './lib/string';
+import { str2buffer, view8 } from 'string-encode';
 
 cycleCrypt.CycleCrypt = CycleCrypt;
 cycleCrypt.randomBytes = CycleCrypt.randomBytes;

@@ -1,6 +1,6 @@
 {
   "name": "cycle-crypt",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Variable size symmetric key encryption algorithm",
   "module": "cycle-crypt.js",
   "main": "dist/cycle-crypt.js",
@@ -53,15 +53,20 @@
     "url": "https://github.com/duzun/cycle-crypt/issues"
   },
   "homepage": "https://github.com/duzun/cycle-crypt#readme",
+  "dependencies": {
+    "string-encode": "^0.1.1"
+  },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "chai": "^4.2.0",
     "esm": "^3.2.25",
     "mocha": "^6.2.2",
-    "rollup": "^1.27.8",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-terser": "^5.1.2",
+    "require-json6": "^1.1.0",
+    "rollup": "^2.0.6",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-terser": "^5.3.0",
     "verup": "^1.7"
   },
   "browserslist": "> 0.25%, not dead",

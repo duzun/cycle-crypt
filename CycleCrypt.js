@@ -1,7 +1,7 @@
 /*requires Uint8Array, Uint32Array*/
 
 import randomBytes from './lib/randomBytes';
-import { str2buffer, view8, toString } from './lib/string';
+import { str2buffer, view8, toString } from 'string-encode';
 
 /**
  * Variable size symmetric key encryption algorithm.

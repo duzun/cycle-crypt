@@ -4,9 +4,8 @@
             "@babel/env",
             {
                 "modules": false // "amd" | "umd" | "systemjs" | "commonjs" | false
-            },
-        ],
+            }
+        ]
     ],
-    "compact": false,
-    "exclude": "node_modules/**"
+    "compact": false
 }
