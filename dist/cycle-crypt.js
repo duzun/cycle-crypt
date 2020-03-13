@@ -4,15 +4,20 @@
     (global = global || self, global.cycleCrypt = factory());
 }(this, (function () { 'use strict';
 
+    /**
+     * Convert different types of JavaScript String to/from Uint8Array.
+     *
+     * @author Dumitru Uzun (DUzun.Me)
+     * @version 0.1.1
+     */
+
     /*requires Uint8Array*/
 
     /*globals escape, unescape, encodeURI, decodeURIComponent, btoa*/
     var chr = String.fromCharCode;
-
     function ord(chr) {
       return chr.charCodeAt(0);
     }
-
     function buffer2bin(buf) {
       buf = view8(buf);
       return chr.apply(String, buf);
@@ -49,7 +54,7 @@
         str = utf8Encode(str);
       }
 
-      return new Uint8Array(str.split('').map(ord));
+      return new Uint8Array(String(str).split('').map(ord));
     }
     /**
      * This method is a replacement of Buffer.toString(enc)
@@ -92,8 +97,8 @@
       if (len == undefined) len = buf.byteLength - start;
       return new Uint8Array(buf.buffer, buf.byteOffset + start, len);
     }
-    var hasMultibyteRE = /([^\x00-\xFF]+)/;
-    var isASCIIRE = /^[\x00-\x7F]+$/;
+    var hasMultibyteRE = /([^\x00-\xFF])/;
+    var isASCIIRE = /^[\x00-\x7F]*$/;
     function hasMultibyte(str) {
       var m = hasMultibyteRE.exec(str);
       return m ? m[1] : false;
