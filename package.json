@@ -54,7 +54,7 @@
   },
   "homepage": "https://github.com/duzun/cycle-crypt#readme",
   "dependencies": {
-    "string-encode": "^0.1.1"
+    "string-encode": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
