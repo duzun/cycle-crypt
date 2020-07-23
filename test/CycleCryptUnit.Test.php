@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace duzun;
+namespace duzun\TestCase;
 use function duzun\cycleCrypt;
 use duzun\CycleCrypt;
 use PHPUnit\Framework\TestCase;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 function_exists('duzun\\cycleCrypt') or
 require __DIR__ . '/../cycle-crypt.php';
 
-class TestCycleCrypt extends TestCase {
+class CycleCryptUnit extends TestCase {
 
     public function test_cycleCrypt() {
         $test_data = [];
