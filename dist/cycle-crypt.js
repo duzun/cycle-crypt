@@ -1,27 +1,34 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (global = global || self, global.cycleCrypt = factory());
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.cycleCrypt = factory());
 }(this, (function () { 'use strict';
 
     /**
      * Convert different types of JavaScript String to/from Uint8Array.
      *
      * @author Dumitru Uzun (DUzun.Me)
-     * @version 0.1.1
+     * @version 0.2.2
      */
 
     /*requires Uint8Array*/
 
     /*globals escape, unescape, encodeURI, decodeURIComponent, btoa*/
     var chr = String.fromCharCode;
-    function ord(chr) {
-      return chr.charCodeAt(0);
-    }
     function buffer2bin(buf) {
       buf = view8(buf);
       return chr.apply(String, buf);
     }
+    /**
+     * Get the hex representation of a buffer (TypedArray)
+     *
+     * @requires String.prototype.padStart()
+     *
+     * @param   {TypedArray}  buf Uint8Array is desirable, cause it is consistent regardless of the endianness
+     *
+     * @return  {String} The hex representation of the buf
+     */
+
     function buffer2hex(buf) {
       var bpe = buf.BYTES_PER_ELEMENT << 1;
       return buf.reduce(function (r, c) {
@@ -45,6 +52,8 @@
       return buf;
     }
     function str2buffer(str, asUtf8) {
+      str = String(str);
+
       if (asUtf8 == undefined) {
         // Some guessing
         asUtf8 = hasMultibyte(str); // || !isASCII(str)
@@ -52,13 +61,27 @@
 
       if (asUtf8) {
         str = utf8Encode(str);
+      } // Smaller x2
+      // return new Uint8Array(String(str).split('').map(ord));
+      // Faster x3-4
+
+
+      var len = str.length;
+      var buf = new Uint8Array(len);
+
+      while (len--) {
+        buf[len] = str.charCodeAt(len);
       }
 
-      return new Uint8Array(String(str).split('').map(ord));
+      return buf;
     }
     /**
      * This method is a replacement of Buffer.toString(enc)
      * for Browser, where Buffer is not available.
+     *
+     * @requires btoa
+     *
+     * @this {Uint8Array}
      *
      * @param   {String}  enc  'binary' | 'hex' | 'base64' | 'utf8' | undefined
      *
