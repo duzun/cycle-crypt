@@ -5,6 +5,8 @@ all: test_all build
 build:
 	@npm run --silent build
 
+# --- Unit-tests ---------------------------------------------------------------
+
 test_all: test_php test_php_cli test_js test_js_cli
 
 test_js:
@@ -42,6 +44,8 @@ test_js_cli:
 		echo success && rm -f -- /tmp/cycry.j* && echo; \
 	fi
 
+# --- RNG/entropy tests --------------------------------------------------------
+
 speed_report:
 	@(cd ./test && \
 		. ./util.sh && cpu_model && \
@@ -71,6 +75,11 @@ dieharder_php:
 		| php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
 		| dieharder -a -g 200
 
+# Just for comparison
+dieharder_urandom:
+	@cat /dev/urandom \
+		| dieharder -a -g 200
+
 # Warning! testu01_gateway doesn't work for some reason, can't pipe data in :(
 # See https://github.com/blep/testu01_gateway
 # Use a bad key of 128 bits
@@ -79,6 +88,8 @@ testu01:
 	cat /dev/zero \
 		| php bin/cycry.php -k 0x0123456789ABCDEFFEDCBA9876543210 -so /dev/null \
 		| ./vendor/bin/testu01_gateway --small-crush
+
+# --- CI -----------------------------------------------------------------------
 
 install_node:
 	@if [ -n "$(NODE_RELEASE)" ]; then \
