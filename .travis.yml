@@ -17,11 +17,11 @@ jobs:
     fast_finish: true
     include:
         - php: 7.3
-          env: NODE_RELEASE=13.x
+          env: NODE_RELEASE=17.x
         - php: 7.2
-          env: NODE_RELEASE=12.x
+          env: NODE_RELEASE=16.x
         - php: 7.1
-          env: NODE_RELEASE=10.x
+          env: NODE_RELEASE=15.x
     allow_failures:
         - php: '7.0'
 
