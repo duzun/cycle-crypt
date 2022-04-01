@@ -97,7 +97,7 @@ install_node:
 		sudo rm -rf -- "$(HOME)/.nvm" && \
 		curl -sL "https://deb.nodesource.com/setup_$(NODE_RELEASE)" | sudo -E bash - && \
 		sudo apt-get install -y nodejs && \
-		command -v npx || npm i -g npx; \
+		( command -v npx || npm i -g npx ); \
 	fi
 
 npm_install:
