@@ -1,4 +1,4 @@
-# cycle-crypt [![Build Status](https://travis-ci.com/duzun/cycle-crypt.svg?branch=master)](https://travis-ci.com/duzun/cycle-crypt) [![codecov](https://codecov.io/gh/duzun/cycle-crypt/branch/master/graph/badge.svg)](https://codecov.io/gh/duzun/cycle-crypt)
+# cycle-crypt [![codecov](https://codecov.io/gh/duzun/cycle-crypt/branch/master/graph/badge.svg)](https://codecov.io/gh/duzun/cycle-crypt)
 
 Variable size [symmetric](https://en.wikipedia.org/wiki/Symmetric-key_algorithm) key encryption algorithm.
 
@@ -184,7 +184,7 @@ Choose two or more ciphers `C1`, `C2` ... `Cn` from two or more vendors.
 
 When ciphering the message `M` with `C` = `M` ^ `C1` ^ `C2` ^ ... ^ `Cn`, the secrecy of the cipher-text `C` is not worse than the best of `Ci`.
 
-In other words, it can't hurt the secrecy when `xor`ing more ciphers.
+In other words, it can't hurt the secrecy when `xor`ing more independent ciphers.
 
 The theory behind this property is analysed and proven in my Masters Thesis:
 
