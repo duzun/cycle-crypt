@@ -1,4 +1,4 @@
-# cycle-crypt [![Build Status](https://travis-ci.com/duzun/cycle-crypt.svg?branch=master)](https://travis-ci.com/duzun/cycle-crypt) [![codecov](https://codecov.io/gh/duzun/cycle-crypt/branch/master/graph/badge.svg)](https://codecov.io/gh/duzun/cycle-crypt)
+# cycle-crypt [![codecov](https://codecov.io/gh/duzun/cycle-crypt/branch/master/graph/badge.svg)](https://codecov.io/gh/duzun/cycle-crypt)
 
 Variable size [symmetric](https://en.wikipedia.org/wiki/Symmetric-key_algorithm) key encryption algorithm.
 
