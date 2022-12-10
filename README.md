@@ -159,14 +159,16 @@ Note: The Node.js CLI version is much faster than the PHP one.
 
 ## CLI Usage
 
-    cycle-crypt -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
+    cycle-crypt -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-sr <salt_rounds>] [-i <file_in>] [-o <file_out>]
     cycle-crypt -h|--help
 
     -h, --help      Show this help
     -k, --key       The encryption key. Could be hex if starts with '0x'.
     -s, --salt      Random bytes to be used as salt. Could be hex if starts with '0x'.
+                    Can contain the salt-rounds as "0x<salt_in_hex>x<salt_rounds>".
     -si, --salt-in  Filename or - from where to read the salt.
     -so, --salt-out Filename or - where to output the generated salt.
+    -sr, --salt-rounds Number of rounds of initial state generated from salt + key
     -i, --in        Input file to encrypt or - for STDIN
     -o, --out       Output file or - for STDOUT
 

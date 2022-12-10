@@ -9,6 +9,7 @@ class CycleCryptStream extends Transform {
     constructor(options) {
         const key = options.key;
         const salt = options.salt;
+        const saltRounds = options.saltRounds;
         let { highWaterMark } = options;
         if (highWaterMark) {
             // Make sure it is a multiple of 4 bytes
@@ -16,7 +17,7 @@ class CycleCryptStream extends Transform {
         }
         super(options);
 
-        const cc = new CycleCrypt(key, salt == undefined ? true : salt);
+        const cc = new CycleCrypt(key, salt == undefined ? true : salt, saltRounds);
         this._cc = cc;
         this._keyLen = cc.keyByteSize;
 

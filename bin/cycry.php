@@ -19,6 +19,7 @@ final class CyCry
         's' => 'salt',
         'so' => 'salt-out',
         'si' => 'salt-in',
+        'sr' => 'salt-rounds',
         'i' => 'in',
         'o' => 'out',
         'h' => 'help',
@@ -42,6 +43,8 @@ final class CyCry
                 $sout = self::_getStream($args['salt-out'], false);
             }
 
+            $saltRounds = empty($args['salt-rounds']) ? null : $args['salt-rounds'];
+
             if (empty($args['salt'])) {
                 if(empty($args['salt-in'])) {
                     // When there in no salt, generate it and save/show it.
@@ -62,7 +65,16 @@ final class CyCry
             } else {
                 $salt = $args['salt'];
                 if (strncmp($salt, '0x', 2) == 0) {
-                    $salt = hex2bin(substr($salt, 2));
+                    $salt = substr($salt, 2);
+                    $i = strpos($salt, 'x');
+                    if($i !== false) {
+                        $r = intval(substr($salt, $i+1));
+                        $salt = substr($salt, 0, $i);
+                        if(!$saltRounds && $r) {
+                            $saltRounds = $r;
+                        }
+                    }
+                    $salt = hex2bin($salt);
                 }
             }
 
@@ -84,7 +96,7 @@ final class CyCry
                 }
             }
 
-            $cc = new CycleCrypt($key, $salt);
+            $cc = new CycleCrypt($key, $salt, $saltRounds);
             $keyByteSize = $cc->getKeyByteSize();
             $chunkSize = intval(ceil(128 * 1024 / $keyByteSize) * $keyByteSize);
 
@@ -103,14 +115,16 @@ final class CyCry
         $name = basename(__FILE__, '.php');
         echo <<<EOS
 Usage:
-    $name -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
+    $name -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-sr <salt_rounds>] [-i <file_in>] [-o <file_out>]
     $name -h|--help
 
     -h, --help      Show this help
     -k, --key       The encryption key. Could be hex if starts with '0x'.
     -s, --salt      Random bytes to be used as salt. Could be hex if starts with '0x'.
+                    Can contain the salt-rounds as "0x<salt_in_hex>x<salt_rounds>".
     -si, --salt-in  Filename or - from where to read the salt.
     -so, --salt-out Filename or - where to output the generated salt.
+    -sr, --salt-rounds Number of rounds of initial state generated from salt + key
     -i, --in        Input file to encrypt or - for STDIN
     -o, --out       Output file or - for STDOUT
 

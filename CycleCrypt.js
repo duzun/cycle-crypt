@@ -12,8 +12,9 @@ import { str2buffer, view8, toString } from 'string-encode';
  * @param   {String|ArrayBuffer|Boolean} salt
  *              If a string, use it as salt.
  *              If TRUE, generate salt.
+ * @param {Number} saltRounds - Number of rounds of initial state generated from salt ⊕ key
  */
-export default function CycleCrypt(key, salt) {
+export default function CycleCrypt(key, salt, saltRounds) {
     const self = this;
 
     key = str2buf(key);
@@ -21,7 +22,7 @@ export default function CycleCrypt(key, salt) {
         salt = randomBytes(Math.min(256, key.byteLength << 1));
     }
     self.salt = salt;
-    self._key = key = saltKey(key, str2buf(salt));
+    self._key = key = saltKey(key, str2buf(salt), saltRounds);
 }
 
 Object.defineProperties(CycleCrypt.prototype, {

@@ -12,16 +12,18 @@ cycleCrypt.str2buffer = CycleCrypt.str2buffer;
 /**
  * Simple encryption using xor, a key and salt.
  *
- * @param   string|Uint8Array  $key   The encryption key
- * @param   string|Uint8Array  $data  Data to encrypt
- * @param   string|Uint8Array|bool $salt
+ * @param   {String|Uint8Array}  $key   The encryption key
+ * @param   {String|Uint8Array}  $data  Data to encrypt
+ * @param   {String|Uint8Array|bool} $salt
  *              If a string, use it as salt.
  *              If TRUE, generate salt and prepend it to the encrypted data.
  *              If FALSE, get the salt from the data.
+ * @param {Number} saltRounds - Number of rounds of initial state generated from salt ⊕ key
+ *
  *
  * @return  Uint8Array  The encrypted data. If $salt is TRUE, the generated salt is prepended to the result.
  */
-export default function cycleCrypt(key, data, salt = true) {
+export default function cycleCrypt(key, data, salt = true, saltRounds=1) {
 
     // Read salt from input
     if (salt === false) {
@@ -34,7 +36,7 @@ export default function cycleCrypt(key, data, salt = true) {
         salt = true;
     }
 
-    const cc = new CycleCrypt(key, salt);
+    const cc = new CycleCrypt(key, salt, saltRounds);
     data = cc._(data);
 
     // Add the generated salt to the output
