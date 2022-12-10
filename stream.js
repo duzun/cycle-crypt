@@ -53,6 +53,10 @@ class CycleCryptStream extends Transform {
             chunk = _cc._(chunk);
             return callback(null, chunk);
         }
+        else {
+            this._buf = chunk;
+        }
+
         callback(null);
     }
 
