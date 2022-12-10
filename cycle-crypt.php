@@ -16,10 +16,11 @@ use duzun\CycleCrypt;
  *              If a string, use it as salt.
  *              If TRUE, generate salt and prepend it to the encrypted data.
  *              If FALSE, get the salt from the data.
+ * @param   int $saltRounds  Number of rounds of initial state generated from $salt ⊕ $key
  *
  * @return  string      The encrypted data. If $salt is TRUE, the generated salt is prepended to the result.
  */
-function cycleCrypt($key, $data, $salt = true)
+function cycleCrypt($key, $data, $salt = true, $saltRounds = 1)
 {
     // Use the salt prepended to the data
     if ($salt === false) {
@@ -28,7 +29,7 @@ function cycleCrypt($key, $data, $salt = true)
         $data = substr($data, $i + 1);
     }
 
-    $cc = new CycleCrypt($key, $salt);
+    $cc = new CycleCrypt($key, $salt, $saltRounds);
     $ret = $cc($data);
 
     // Generate salt and prepend it to the result

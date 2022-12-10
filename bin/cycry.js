@@ -13,6 +13,7 @@ const argvAliases = {
     s: 'salt',
     so: 'salt-out',
     si: 'salt-in',
+    sr: 'salt-rounds',
     i: 'in',
     o: 'out',
     h: 'help',
@@ -27,6 +28,7 @@ function run() {
     }
 
     let { key, salt } = args;
+    let saltRounds = args['salt-rounds'] || undefined;
 
     const { stdin, stdout, stderr } = process;
 
@@ -52,7 +54,16 @@ function run() {
 
     if('salt' in args) {
         if(salt.slice(0, 2) == '0x') {
-            salt = hex2buffer(salt.slice(2));
+            salt = salt.slice(2);
+            let i = salt.indexOf('x');
+            if(i > -1) {
+                let r = parseInt(salt.slice(i+1));
+                salt = salt.slice(0, i);
+                if(!saltRounds && r) {
+                    saltRounds = r;
+                }
+            }
+            salt = hex2buffer(salt);
         }
     }
     else {
@@ -76,14 +87,14 @@ function run() {
     function pipe(salt) {
         if(so) {
             if(so === stdout || so === stderr) {
-                so.write("salt: 0x" + Buffer.from(salt).toString('hex')).end();
+                so.write("salt: 0x" + Buffer.from(salt).toString('hex') + (saltRounds > 1 ? 'x' + saltRounds : '')).end();
             }
             else {
                 so.write(salt);
             }
         }
 
-        const ccs = new CycleCryptStream({ key, salt });
+        const ccs = new CycleCryptStream({ key, salt, saltRounds });
 
         $in.pipe(ccs).pipe($out);
 
@@ -106,14 +117,16 @@ function usage()
     const name = require('path').basename(process.argv[1], '.js');
     process.stdout.write(`
 Usage:
-    ${name} -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-i <file_in>] [-o <file_out>]
+    ${name} -k <key> [-s <salt> | -si <salt_in> | -so <salt_out>] [-sr <salt_rounds>] [-i <file_in>] [-o <file_out>]
     ${name} -h|--help
 
     -h, --help      Show this help
     -k, --key       The encryption key. Could be hex if starts with '0x'.
     -s, --salt      Random bytes to be used as salt. Could be hex if starts with '0x'.
+                    Can contain the salt-rounds as "0x<salt_in_hex>x<salt_rounds>".
     -si, --salt-in  Filename or - from where to read the salt.
     -so, --salt-out Filename or - where to output the generated salt.
+    -sr, --salt-rounds Number of rounds of initial state generated from salt + key
     -i, --in        Input file to encrypt or - for STDIN
     -o, --out       Output file or - for STDOUT
 

@@ -20,8 +20,9 @@ class CycleCrypt
      * @param   string|bool $salt
      *              If a string, use it as salt.
      *              If TRUE, generate salt.
+     * @param   int $saltRounds  Number of rounds of initial state generated from $salt ⊕ $key
      */
-    public function __construct($key, $salt = true)
+    public function __construct($key, $salt = true, $saltRounds = 1)
     {
         if ($salt === true) {
             $salt = static::genSalt($key);
@@ -29,7 +30,7 @@ class CycleCrypt
         $this->salt = $salt;
 
         $key = static::str2buf($key);
-        $this->key = static::saltKey($key, static::str2buf($salt));
+        $this->key = static::saltKey($key, static::str2buf($salt), $saltRounds);
     }
 
     /**
