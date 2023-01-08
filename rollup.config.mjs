@@ -1,8 +1,9 @@
 // rollup.config.js
 import resolve from '@rollup/plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
-import { terser } from 'rollup-plugin-terser';
-import { module, main, unpkg } from './package.json';
+import babel from '@rollup/plugin-babel';
+import terser from '@rollup/plugin-terser';
+import pkg from './package.json' assert { type: "json" };
+const { module, main, unpkg } = pkg;
 
 // We have to load .babelrc explicitly and pass it as options to `rollup-plugin-babel`,
 // otherwise it would not use our .babelrc for dependencies.
